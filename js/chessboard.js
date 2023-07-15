@@ -3,7 +3,7 @@ export default {
 	highlight
 };
 
-var origBoardEl;
+var tiles;
 
 // ****************************
 
@@ -11,16 +11,19 @@ function draw(boardEl) {
 	// TODO: draw the chessboard, 8 rows (divs)
 	// of 8 tiles (divs) each, inserting all DOM
 	// elements into `boardEl` div
-	origBoardEl = boardEl;
+	var origBoardEl = boardEl;
 	
 	for (let i = 0; i < 8; i++) {
 		let rowEl = document.createElement("div");
 		for (let j = 0; j < 8; j++) {
 			let tileEl = document.createElement("div");
+			tileEl.dataset.row = i;
+			tileEl.dataset.col = j;
 			rowEl.appendChild(tileEl);
 		}
 		boardEl.appendChild(rowEl);
 	}
+	tiles = origBoardEl.querySelectorAll("div > div");
 }
 
 function highlight(tileEl) {
@@ -29,7 +32,6 @@ function highlight(tileEl) {
 	// (major and minor) that `tileEl` belongs to,
 	// to highlight them via CSS class "highlighted"
 	
-	var tiles = origBoardEl.querySelectorAll("div > div");
 	
 	// clear all currently highlighted tiles
 	for (let el of tiles) {
@@ -38,7 +40,8 @@ function highlight(tileEl) {
 
 	if (tileEl) {
 		let rowEl = tileEl.parentNode;
-		let tileRowIdx = [ ...origBoardEl.childNodes ].indexOf(rowEl); 
+		let boardEl = rowEl.parentNode;
+		let tileRowIdx = [ ...boardEl.childNodes ].indexOf(rowEl); 
 		let tileColIdx = [ ...rowEl.childNodes ].indexOf(tileEl);
 
 		// highlight in up-left direction
@@ -67,10 +70,10 @@ function highlight(tileEl) {
 	}
 
 	function findTile(row, col) {
-		return document.querySelector(`
-			#board > 
-			div:nth-child(${ row + 1 }) >
-			div:nth-child(${ col + 1 })
-		`);
+		for (let el of tiles) {
+			if (el.dataset.row == row && el.dataset.col == col) {
+				return el;
+			}
+		}
 	}
 }
